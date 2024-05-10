@@ -3,7 +3,7 @@ const http = require('http');
 const WebSocket = require('ws');
 const path = require('path');
 const EventHubReader = require('./scripts/event-hub-reader.js');
-const db = require('./db'); // Importe o módulo do banco de dados
+const db = require('./scripts/database.js');
 
 const iotHubConnectionString = process.env.IotHubConnectionString;
 if (!iotHubConnectionString) {
