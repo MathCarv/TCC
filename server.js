@@ -52,6 +52,24 @@ const server = http.createServer(app);
 const wss = new WebSocket.Server({ server });
 
 // Código do WebSocket aqui...
+wss.on('connection', (ws) => {
+  console.log('Client connected');
+
+  // Manipulador de evento para quando uma mensagem é recebida do cliente
+  ws.on('message', (message) => {
+    console.log('Received message:', message);
+
+    // Aqui você pode processar a mensagem recebida e responder ao cliente, se necessário
+    // Por exemplo, você pode consultar o banco de dados e enviar os dados para o cliente
+    // ws.send('Hello, client!');
+  });
+
+  // Manipulador de evento para quando a conexão é fechada pelo cliente
+  ws.on('close', () => {
+    console.log('Client disconnected');
+  });
+});
+
 
 const PORT = process.env.PORT || 8080;
 server.listen(PORT, () => {
