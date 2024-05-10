@@ -26,6 +26,10 @@ const app = express();
 // Configurar a pasta de arquivos estáticos
 app.use(express.static(path.join(__dirname, 'public')));
 
+// Adicionar middlewares para analisar dados do corpo da solicitação
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
 // Rota para a página de login
 app.get('/login', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'login.html'));
