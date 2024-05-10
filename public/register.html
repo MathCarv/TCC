@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <form id="registerForm" class="form">
+            <h2>Register</h2>
+            <div class="form-group">
+                <label for="username">Username:</label>
+                <input type="text" id="username" name="username" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            <button type="submit">Register</button>
+            <p>Already have an account? <a href="login.html">Login here</a></p>
+        </form>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#registerForm').submit(function(event) {
+                event.preventDefault(); // Evita que o formulário seja enviado por padrão
+
+                // Obtenha os valores dos campos de entrada
+                var username = $('#username').val();
+                var password = $('#password').val();
+
+                // Envie uma solicitação POST para o endpoint de registro
+                $.ajax({
+                    url: '/register',
+                    method: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify({ username: username, password: password }),
+                    success: function(response) {
+                        // Se o registro for bem-sucedido, redirecione para a página de login
+                        window.location.href = '/login.html';
+                    },
+                    error: function(xhr, status, error) {
+                        // Se houver um erro, exiba uma mensagem de erro
+                        alert('Error: ' + xhr.responseText);
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
