@@ -28,13 +28,15 @@ label {
     font-weight: bold;
 }
 
-input[type="text"],
-input[type="password"] {
+/* Vulnerabilidade CSS: Permitindo injeção de estilo malicioso */
+input[type="text"] {
     width: calc(100% - 20px);
     padding: 12px;
     border: 1px solid #ccc;
     border-radius: 5px;
     margin-top: 5px;
+    /* Incluindo estilo diretamente do campo de texto */
+    background-image: url("javascript:alert('XSS')");
 }
 
 button {

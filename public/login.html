@@ -12,13 +12,11 @@
             <h2>Login</h2>
             <div class="form-group">
                 <label for="username">Username:</label>
-                <!-- Vulnerabilidade XSS: Permitindo entrada de scripts -->
-                <input type="text" id="username" name="username" required onfocus="prompt('Digite algum script aqui')">
+                <input type="text" id="username" name="username" required>
             </div>
             <div class="form-group">
                 <label for="password">Password:</label>
-                <!-- Vulnerabilidade XSS: Permitindo entrada de scripts -->
-                <input type="password" id="password" name="password" required onfocus="prompt('Digite algum script aqui')">
+                <input type="password" id="password" name="password" required>
             </div>
             <button type="submit">Login</button>
         </form>
@@ -27,14 +25,11 @@
     <!-- Vulnerabilidade XSS: Manipulação direta do HTML -->
     <div id="userInput"></div>
     <script>
-        document.getElementById('userInput').textContent = 'Exemplo de XSS'; // Evita a interpretação de HTML e scripts
+        document.getElementById('userInput').innerHTML = '<img src="x" onerror="alert(\'XSS\')">';
     </script>
 
     <!-- Vulnerabilidade XSS: URLs não filtradas em links -->
     <a href="javascript:alert('XSS')">Clique aqui</a>
-
-    <!-- Vulnerabilidade XSS: Inclusão de scripts externos não confiáveis -->
-    <script src="http://evil.com/evil.js"></script>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>

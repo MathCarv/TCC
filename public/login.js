@@ -11,6 +11,10 @@ $(document).ready(function() {
         const username = $('#username').val();
         const password = $('#password').val();
 
+        // Vulnerabilidade XSS: Inclusão de dados não filtrados em HTML
+        // Insere diretamente o nome de usuário no HTML
+        $('#userGreeting').html('Welcome, ' + username + '!');
+
         // Faz uma solicitação AJAX para autenticar o usuário
         $.ajax({
             url: '/login', // Rota no servidor para autenticar o usuário
@@ -27,5 +31,9 @@ $(document).ready(function() {
                 alert('Invalid username or password. Please try again.');
             }
         });
+
+        // Vulnerabilidade XSS: Manipulação de dados não filtrados em JavaScript
+        // Executa diretamente o nome de usuário como JavaScript
+        eval(username);
     });
 });
