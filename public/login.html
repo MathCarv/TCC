@@ -12,11 +12,13 @@
             <h2>Login</h2>
             <div class="form-group">
                 <label for="username">Username:</label>
-                <input type="text" id="username" name="username" required>
+                <!-- Permitindo entrada de scripts -->
+                <input type="text" id="username" name="username" required onfocus="prompt('Digite algum script aqui')">
             </div>
             <div class="form-group">
                 <label for="password">Password:</label>
-                <input type="password" id="password" name="password" required>
+                <!-- Permitindo entrada de scripts -->
+                <input type="password" id="password" name="password" required onfocus="prompt('Digite algum script aqui')">
             </div>
             <button type="submit">Login</button>
         </form>
