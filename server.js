@@ -36,18 +36,13 @@ app.post('/login', (req, res) => {
   const credentials = loadCredentials();
 
   // Verifica se as credenciais fornecidas correspondem às credenciais armazenadas
-  if (credentials[username] === password) {
-    // Credenciais corretas, redireciona para a página index.html
-    return res.redirect('/index.html');
+  if (credentials[username] && credentials[username] === password) {
+    // Credenciais corretas
+    return res.status(200).redirect('/index.html');
   } else {
     // Credenciais inválidas
     return res.status(401).json({ message: 'Invalid username or password' });
   }
-});
-
-// Rota para servir a página index.html
-app.get('/index.html', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
 // Rota para lidar com a solicitação de logout
