@@ -42,13 +42,14 @@ app.post('/login', (req, res) => {
   if (credentials[username] && credentials[username] === password) {
     // Credenciais corretas
     console.log('Login successful for user:', username); // Imprime uma mensagem de sucesso
-    return res.status(200).redirect('/index.html');
+    return res.status(200).redirect('index.html'); // Alterei aqui
   } else {
     // Credenciais inválidas
     console.log('Invalid credentials for user:', username); // Imprime uma mensagem de erro
     return res.status(401).json({ message: 'Invalid username or password' });
   }
 });
+
 
 // Rota para lidar com a solicitação de logout
 app.get('/logout', (req, res) => {
