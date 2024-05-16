@@ -17,29 +17,30 @@ body {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     max-width: 400px;
     width: 100%;
-    box-sizing: border-box;
     text-align: center;
 }
 
+h2 {
+    margin-bottom: 20px;
+}
+
 .form-group {
-    margin-bottom: 30px;
+    margin-bottom: 20px;
     text-align: left;
 }
 
 label {
     display: block;
-    margin-bottom: 10px;
+    margin-bottom: 5px;
     font-weight: bold;
 }
 
-input[type="text"] {
+input[type="text"], input[type="password"] {
     width: 100%;
-    padding: 12px;
+    padding: 10px;
     border: 1px solid #ccc;
     border-radius: 5px;
-    margin-top: 5px;
     box-sizing: border-box;
-    background-color: #fff;
 }
 
 button {
@@ -52,7 +53,6 @@ button {
     width: 100%;
     transition: background-color 0.3s ease;
     box-sizing: border-box;
-    margin-top: 10px;
 }
 
 button:hover {

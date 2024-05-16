@@ -1,39 +1,32 @@
 $(document).ready(function() {
-    // Seleciona o formulário de login
-    const loginForm = $('#loginForm');
+    $('#loginForm').submit(function(event) {
+        event.preventDefault(); // Evita que o formulário seja enviado por padrão
 
-    // Manipula o evento de envio do formulário
-    loginForm.submit(function(event) {
-        // Impede o comportamento padrão do formulário de ser submetido
-        event.preventDefault();
+        // Obtenha os valores dos campos de entrada
+        var username = $('#username').val();
+        var password = $('#password').val();
 
-        // Obtém os valores dos campos de usuário e senha
-        const username = $('#username').val();
-        const password = $('#password').val();
-
-        // Vulnerabilidade XSS: Inclusão de dados não filtrados em HTML
-        // Insere diretamente o nome de usuário no HTML
-        $('#userGreeting').html('Welcome, ' + username + '!');
-
-        // Faz uma solicitação AJAX para autenticar o usuário
+        // Envie uma solicitação POST para o endpoint /login
         $.ajax({
-            url: '/login', // Rota no servidor para autenticar o usuário
+            url: '/login',
             method: 'POST',
             contentType: 'application/json',
             data: JSON.stringify({ username: username, password: password }),
             success: function(response) {
-                // Redireciona o usuário para a página principal se o login for bem-sucedido
-                window.location.href = '/';
+                // Se o login for bem-sucedido, redirecione para a página principal
+                window.location.href = '/index.html';
             },
             error: function(xhr, status, error) {
-                console.error('Error logging in:', error);
-                // Exibe uma mensagem de erro ao usuário
-                alert('Invalid username or password. Please try again.');
+                // Se houver um erro, exiba uma mensagem de erro
+                alert('Error: ' + xhr.responseText);
             }
         });
-
-        // Vulnerabilidade XSS: Manipulação de dados não filtrados em JavaScript
-        // Executa diretamente o nome de usuário como JavaScript
-        eval(username);
     });
+
+    // Remove as vulnerabilidades XSS
+    // Exemplo de manipulação segura de HTML
+    $('#userGreeting').text('Please log in to continue.');
+
+    // Remova o link inseguro
+    // A lógica aqui é não incluir links inseguros no HTML
 });
