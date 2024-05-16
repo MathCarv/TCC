@@ -18,15 +18,12 @@ $(document).ready(function() {
             },
             error: function(xhr, status, error) {
                 // Se houver um erro, exiba uma mensagem de erro
-                alert('Error: ' + xhr.responseText);
+                if (xhr.status === 401) {
+                    alert('Invalid username or password. Please try again.');
+                } else {
+                    alert('Error: ' + xhr.responseText);
+                }
             }
         });
     });
-
-    // Remove as vulnerabilidades XSS
-    // Exemplo de manipulação segura de HTML
-    $('#userGreeting').text('Please log in to continue.');
-
-    // Remova o link inseguro
-    // A lógica aqui é não incluir links inseguros no HTML
 });

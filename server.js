@@ -13,6 +13,17 @@ app.use(express.urlencoded({ extended: true }));
 // Caminho para o arquivo onde as credenciais serão armazenadas
 const credentialsFile = path.join(__dirname, 'credentials.json');
 
+// Função para carregar as credenciais do arquivo JSON
+const loadCredentials = () => {
+  try {
+    const data = fs.readFileSync(credentialsFile);
+    return JSON.parse(data);
+  } catch (err) {
+    console.error('Error reading credentials file:', err);
+    return {};
+  }
+};
+
 // Rota para a página de login
 app.get('/login', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'login.html'));
@@ -22,25 +33,16 @@ app.get('/login', (req, res) => {
 app.post('/login', (req, res) => {
   const { username, password } = req.body;
 
-  // Carrega as credenciais do arquivo JSON
-  fs.readFile(credentialsFile, (err, data) => {
-    if (err) {
-      console.error('Error reading credentials file:', err);
-      return res.status(500).json({ message: 'Internal server error' });
-    }
+  const credentials = loadCredentials();
 
-    const credentials = JSON.parse(data);
-
-    // Verifica se as credenciais fornecidas correspondem às credenciais armazenadas
-    if (credentials[username] === password) {
-      // Credenciais corretas
-      // Você pode retornar um token de autenticação aqui ou redirecionar para a página principal
-      return res.status(200).json({ message: 'Login successful' });
-    } else {
-      // Credenciais inválidas
-      return res.status(401).json({ message: 'Invalid username or password' });
-    }
-  });
+  // Verifica se as credenciais fornecidas correspondem às credenciais armazenadas
+  if (credentials[username] === password) {
+    // Credenciais corretas
+    return res.status(200).json({ message: 'Login successful' });
+  } else {
+    // Credenciais inválidas
+    return res.status(401).json({ message: 'Invalid username or password' });
+  }
 });
 
 // Rota para lidar com a solicitação de logout
@@ -74,7 +76,6 @@ wss.on('connection', (ws) => {
     console.log('Client disconnected');
   });
 });
-
 
 const PORT = process.env.PORT || 8080;
 server.listen(PORT, () => {
