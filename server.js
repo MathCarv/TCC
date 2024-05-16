@@ -45,7 +45,7 @@ app.post('/login', (req, res) => {
     return res.status(200).redirect('index.html'); // Alterei aqui
   } else {
     // Credenciais inválidas
-    console.log('Invalid credentials for user:', username); // Imprime uma mensagem de erro
+    console.log('Invalid credentials for user:', username); // Imprime uma mensagem de erros
     return res.status(401).json({ message: 'Invalid username or password' });
   }
 });
