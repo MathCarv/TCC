@@ -17,27 +17,30 @@ body {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     max-width: 400px;
     width: 100%;
-    box-sizing: border-box;
+    text-align: center;
+}
+
+h2 {
+    margin-bottom: 20px;
 }
 
 .form-group {
-    margin-bottom: 30px;
+    margin-bottom: 20px;
+    text-align: left;
 }
 
 label {
     display: block;
-    margin-bottom: 10px;
+    margin-bottom: 5px;
     font-weight: bold;
 }
 
-input[type="text"] {
-    width: calc(100% - 24px); /* Ajuste para compensar padding e borda */
-    padding: 12px;
+input[type="text"], input[type="password"] {
+    width: 100%;
+    padding: 10px;
     border: 1px solid #ccc;
     border-radius: 5px;
-    margin-top: 5px;
     box-sizing: border-box;
-    background-color: #fff; /* Removendo a vulnerabilidade */
 }
 
 button {
@@ -63,4 +66,8 @@ a {
     text-align: center;
     margin-top: 15px;
     font-size: 14px;
+}
+
+a:hover {
+    text-decoration: underline;
 }
