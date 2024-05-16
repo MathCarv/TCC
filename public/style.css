@@ -7,6 +7,7 @@ body {
     justify-content: center;
     align-items: center;
     height: 100vh;
+    box-sizing: border-box;
 }
 
 .container {
@@ -16,6 +17,7 @@ body {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     max-width: 400px;
     width: 100%;
+    box-sizing: border-box;
 }
 
 .form-group {
@@ -28,15 +30,14 @@ label {
     font-weight: bold;
 }
 
-/* Vulnerabilidade CSS: Permitindo injeção de estilo malicioso */
 input[type="text"] {
-    width: calc(100% - 20px);
+    width: calc(100% - 24px); /* Ajuste para compensar padding e borda */
     padding: 12px;
     border: 1px solid #ccc;
     border-radius: 5px;
     margin-top: 5px;
-    /* Incluindo estilo diretamente do campo de texto */
-    background-image: url("javascript:alert('XSS')");
+    box-sizing: border-box;
+    background-color: #fff; /* Removendo a vulnerabilidade */
 }
 
 button {
@@ -48,6 +49,7 @@ button {
     cursor: pointer;
     width: 100%;
     transition: background-color 0.3s ease;
+    box-sizing: border-box;
 }
 
 button:hover {

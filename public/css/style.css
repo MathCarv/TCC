@@ -3,17 +3,27 @@ body {
   padding: 50px;
   margin: 0;
   text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  box-sizing: border-box;
 }
 
 .flexHeader {
   display: flex;
   flex-direction: row;
-  flex-wrap: nowrap;
   justify-content: space-between;
+  width: 100%;
+  max-width: 1200px;
+  margin-bottom: 20px;
+  box-sizing: border-box;
 }
 
 a {
   color: #00B7FF;
+  text-decoration: none;
 }
 
 body select {
@@ -27,16 +37,15 @@ body select {
   color: #444444;
   line-height: 16px;
   appearance: none;
-  /* this is must */ -webkit-appearance: none;
+  -webkit-appearance: none;
   -moz-appearance: none;
+  margin: 10px 0;
 }
 
-/* body select.select_box option */
 body select option {
   padding: 0 4px;
 }
 
-/* for Edge */
 select::-ms-expand {
   display: none;
 }
