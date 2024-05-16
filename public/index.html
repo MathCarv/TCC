@@ -22,47 +22,5 @@
     <div>
         <canvas id="iotChart"></canvas>
     </div>
-    <!-- Botão "Sair" -->
-    <button id="logoutBtn">Sair</button>
-
-    <script>
-        // Função para verificar se o usuário está autenticado
-        function checkAuthentication() {
-            $.ajax({
-                url: '/check-auth', // Rota no servidor para verificar a autenticação
-                method: 'GET',
-                success: function(response) {
-                    // Se o usuário não estiver autenticado, redirecionar para a página de login
-                    if (!response.authenticated) {
-                        window.location.href = '/login'; // Redireciona para a página de login
-                    }
-                },
-                error: function(xhr, status, error) {
-                    console.error('Error checking authentication:', error);
-                }
-            });
-        }
-
-        // Função para deslogar o usuário
-        function logout() {
-            $.ajax({
-                url: '/logout', // Rota no servidor para deslogar o usuário
-                method: 'GET',
-                success: function(response) {
-                    // Redireciona o usuário para a página de login após o logout
-                    window.location.href = '/login'; // Redireciona para a página de login
-                },
-                error: function(xhr, status, error) {
-                    console.error('Error logging out:', error);
-                }
-            });
-        }
-
-        // Chama a função de verificação de autenticação quando a página é carregada
-        $(document).ready(function() {
-            checkAuthentication();
-            $('#logoutBtn').click(logout); // Define o clique no botão de logout
-        });
-    </script>
 </body>
 </html>
