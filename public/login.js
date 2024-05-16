@@ -1,6 +1,7 @@
 $(document).ready(function() {
     // Seleciona o formulário de login
     const loginForm = $('#loginForm');
+    const errorMessage = $('#errorMessage'); // Seleciona a div para exibir a mensagem de erro
 
     // Manipula o evento de envio do formulário
     loginForm.submit(function(event) {
@@ -24,7 +25,7 @@ $(document).ready(function() {
             error: function(xhr, status, error) {
                 console.error('Error logging in:', error);
                 // Exibe uma mensagem de erro ao usuário
-                alert('Invalid username or password. Please try again.');
+                errorMessage.text('Invalid username or password. Please try again.'); // Define o texto da mensagem de erro
             }
         });
     });
