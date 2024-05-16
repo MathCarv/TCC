@@ -18,12 +18,10 @@ body {
     max-width: 400px;
     width: 100%;
     box-sizing: border-box;
-    text-align: center;
 }
 
 .form-group {
     margin-bottom: 30px;
-    text-align: left;
 }
 
 label {
@@ -33,13 +31,13 @@ label {
 }
 
 input[type="text"] {
-    width: 100%;
+    width: calc(100% - 24px); /* Ajuste para compensar padding e borda */
     padding: 12px;
     border: 1px solid #ccc;
     border-radius: 5px;
     margin-top: 5px;
     box-sizing: border-box;
-    background-color: #fff;
+    background-color: #fff; /* Removendo a vulnerabilidade */
 }
 
 button {
@@ -52,7 +50,6 @@ button {
     width: 100%;
     transition: background-color 0.3s ease;
     box-sizing: border-box;
-    margin-top: 10px;
 }
 
 button:hover {
@@ -66,8 +63,4 @@ a {
     text-align: center;
     margin-top: 15px;
     font-size: 14px;
-}
-
-a:hover {
-    text-decoration: underline;
 }
