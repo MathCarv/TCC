@@ -28,7 +28,7 @@ const loadCredentials = () => {
 
 // Rota para a página de login
 app.get('/login', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'login.html'));
+  res.sendFile(path.resolve(__dirname, 'public', 'login.html'));
 });
 
 // Rota para autenticar o usuário
