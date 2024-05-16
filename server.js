@@ -17,7 +17,9 @@ const credentialsFile = path.join(__dirname, 'credentials.json');
 const loadCredentials = () => {
   try {
     const data = fs.readFileSync(credentialsFile);
-    return JSON.parse(data);
+    const credentials = JSON.parse(data);
+    console.log('Loaded credentials:', credentials); // Imprime as credenciais carregadas
+    return credentials;
   } catch (err) {
     console.error('Error reading credentials file:', err);
     return {};
@@ -34,13 +36,16 @@ app.post('/login', (req, res) => {
   const { username, password } = req.body;
 
   const credentials = loadCredentials();
+  console.log('Checking credentials for user:', username); // Imprime o nome de usuário
 
   // Verifica se as credenciais fornecidas correspondem às credenciais armazenadas
   if (credentials[username] && credentials[username] === password) {
     // Credenciais corretas
+    console.log('Login successful for user:', username); // Imprime uma mensagem de sucesso
     return res.status(200).redirect('/index.html');
   } else {
     // Credenciais inválidas
+    console.log('Invalid credentials for user:', username); // Imprime uma mensagem de erro
     return res.status(401).json({ message: 'Invalid username or password' });
   }
 });
