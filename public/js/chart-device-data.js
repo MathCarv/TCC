@@ -58,31 +58,39 @@ $(document).ready(() => {
     datasets: [
       {
         fill: false,
-        label: 'Temperatura',
+        label: 'Temperatura', // Definir o texto diretamente como uma string
         yAxisID: 'Temperature',
         borderColor: 'rgba(255, 204, 0, 1)',
-        pointBoarderColor: 'rgba(255, 204, 0, 1)',
+        pointBorderColor: 'rgba(255, 204, 0, 1)',
         backgroundColor: 'rgba(255, 204, 0, 0.4)',
         pointHoverBackgroundColor: 'rgba(255, 204, 0, 1)',
         pointHoverBorderColor: 'rgba(255, 204, 0, 1)',
         spanGaps: true,
+        fontColor: 'white', // Definir a cor do texto para branco
       },
       {
         fill: false,
         label: 'Umidade',
         yAxisID: 'Humidity',
-        borderColor: 'rgba(255, 165, 0, 1)',
-        pointBorderColor: 'rgba(255, 165, 0, 1)',
-        backgroundColor: 'rgba(255, 165, 0, 0.4)',
-        pointHoverBackgroundColor: 'rgba(255, 165, 0, 1)',
-        pointHoverBorderColor: 'rgba(255, 165, 0, 1)',
+        borderColor: 'rgba(255, 0, 0, 1)',
+        pointBorderColor: 'rgba(255, 0, 0, 1)',
+        backgroundColor: 'rgba(255, 0, 0, 0.4)',
+        pointHoverBackgroundColor: 'rgba(255, 0, 0, 1)',
+        pointHoverBorderColor: 'rgba(255, 0, 0, 1)',
         spanGaps: true,
-    }       
+        fontColor: 'white', // Definir a cor do texto para branco
+      }
     ]
   };
+  
 
   const chartOptions = {
     scales: {
+      xAxes: [{ // Adicione esta configuração para o eixo X
+        ticks: {
+          fontColor: 'white' // Definir a cor do texto para branco
+        }
+      }],
       yAxes: [{
         id: 'Temperature',
         type: 'linear',
@@ -117,6 +125,7 @@ $(document).ready(() => {
       }]
     }
   };
+  
   
 
   // Get the context of the canvas element we want to select

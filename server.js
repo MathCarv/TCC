@@ -7,30 +7,10 @@ const session = require('express-session');
 const crypto = require('crypto');
 const EventHubReader = require('./scripts/event-hub-reader.js');
 
-
-const iotHubConnectionString = process.env.IotHubConnectionString;
-if (!iotHubConnectionString) {
-  console.error(`Environment variable IotHubConnectionString must be specified.`);
-  return;
-}
-console.log(`Using IoT Hub connection string [${iotHubConnectionString}]`);
-
-const eventHubConsumerGroup = process.env.EventHubConsumerGroup;
-console.log(eventHubConsumerGroup);
-if (!eventHubConsumerGroup) {
-  console.error(`Environment variable EventHubConsumerGroup must be specified.`);
-  return;
-}
-console.log(`Using event hub consumer group [${eventHubConsumerGroup}]`);
-
-
 const app = express();
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
-app.use((req, res /* , next */) => {
-  res.redirect('/');
-});
 
 // Gera uma chave secreta aleatória usando SHA256
 const secretKey = crypto.randomBytes(32).toString('hex');
@@ -110,8 +90,21 @@ app.get('/logout', (req, res) => {
 app.use(express.static(path.join(__dirname, 'public')));
 
 const server = http.createServer(app);
-
 const wss = new WebSocket.Server({ server });
+
+const iotHubConnectionString = "HostName=TccIotHub.azure-devices.net;SharedAccessKeyName=service;SharedAccessKey=jjOkrHXECYjcHVFg3KhLDUWaSc+WCN2oIAIoTPLYZ8k=";
+if (!iotHubConnectionString) {
+  console.error(`Environment variable IotHubConnectionString must be specified.`);
+  process.exit(1);
+}
+console.log(`Using IoT Hub connection string [${iotHubConnectionString}]`);
+
+const eventHubConsumerGroup = "tccconsumergroup";
+if (!eventHubConsumerGroup) {
+  console.error(`Environment variable EventHubConsumerGroup must be specified.`);
+  process.exit(1);
+}
+console.log(`Using event hub consumer group [${eventHubConsumerGroup}]`);
 
 wss.on('connection', (ws) => {
   console.log('Client connected');
@@ -125,20 +118,8 @@ wss.on('connection', (ws) => {
   });
 });
 
-wss.broadcast = (data) => {
-  wss.clients.forEach((client) => {
-    if (client.readyState === WebSocket.OPEN) {
-      try {
-        console.log(`Broadcasting data ${data}`);
-        client.send(data);
-      } catch (e) {
-        console.error(e);
-      }
-    }
-  });
-};
-
 const eventHubReader = new EventHubReader(iotHubConnectionString, eventHubConsumerGroup);
+
 (async () => {
   await eventHubReader.startReadMessage((message, date, deviceId) => {
     try {
@@ -148,7 +129,11 @@ const eventHubReader = new EventHubReader(iotHubConnectionString, eventHubConsum
         DeviceId: deviceId,
       };
 
-      wss.broadcast(JSON.stringify(payload));
+      wss.clients.forEach((client) => {
+        if (client.readyState === WebSocket.OPEN) {
+          client.send(JSON.stringify(payload));
+        }
+      });
     } catch (err) {
       console.error('Error broadcasting: [%s] from [%s].', err, message);
     }
