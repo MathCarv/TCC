@@ -92,14 +92,14 @@ app.use(express.static(path.join(__dirname, 'public')));
 const server = http.createServer(app);
 const wss = new WebSocket.Server({ server });
 
-const iotHubConnectionString = "HostName=TccIotHub.azure-devices.net;SharedAccessKeyName=service;SharedAccessKey=jjOkrHXECYjcHVFg3KhLDUWaSc+WCN2oIAIoTPLYZ8k=";
+const iotHubConnectionString = process.env.IotHubConnectionString;
 if (!iotHubConnectionString) {
   console.error(`Environment variable IotHubConnectionString must be specified.`);
   process.exit(1);
 }
 console.log(`Using IoT Hub connection string [${iotHubConnectionString}]`);
 
-const eventHubConsumerGroup = "tccconsumergroup";
+const eventHubConsumerGroup = process.env.EventHubConsumerGroup;
 if (!eventHubConsumerGroup) {
   console.error(`Environment variable EventHubConsumerGroup must be specified.`);
   process.exit(1);
