@@ -71,13 +71,13 @@ $(document).ready(() => {
         fill: false,
         label: 'Umidade',
         yAxisID: 'Humidity',
-        borderColor: 'rgba(255, 0, 0, 1)',
-        pointBorderColor: 'rgba(255, 0, 0, 1)',
-        backgroundColor: 'rgba(255, 0, 0, 0.4)',
-        pointHoverBackgroundColor: 'rgba(255, 0, 0, 1)',
-        pointHoverBorderColor: 'rgba(255, 0, 0, 1)',
+        borderColor: 'rgba(255, 165, 0, 1)',
+        pointBorderColor: 'rgba(255, 165, 0, 1)',
+        backgroundColor: 'rgba(255, 165, 0, 0.4)',
+        pointHoverBackgroundColor: 'rgba(255, 165, 0, 1)',
+        pointHoverBorderColor: 'rgba(255, 165, 0, 1)',
         spanGaps: true,
-    }    
+    }       
     ]
   };
 
@@ -87,7 +87,7 @@ $(document).ready(() => {
         id: 'Temperature',
         type: 'linear',
         scaleLabel: {
-          labelString: 'Temperature (ºC)',
+          labelString: 'Temperatura (ºC)',
           display: true,
           fontColor: 'white' // Definir a cor do texto para branco
         },
@@ -103,7 +103,7 @@ $(document).ready(() => {
         id: 'Humidity',
         type: 'linear',
         scaleLabel: {
-          labelString: 'Humidity (%)',
+          labelString: 'Umidade (%)',
           display: true,
           fontColor: 'white' // Definir a cor do texto para branco
         },
