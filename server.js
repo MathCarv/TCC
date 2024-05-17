@@ -8,7 +8,7 @@ const app = express();
 
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.urlencoded({ extended: true })));
 
 // Caminho para o arquivo onde as credenciais serão armazenadas
 const credentialsFile = path.join(__dirname, 'credentials.json');
@@ -26,6 +26,11 @@ const loadCredentials = () => {
   }
 };
 
+// Redirecionar a raiz para /login
+app.get('/', (req, res) => {
+  res.redirect('/login');
+});
+
 // Rota para a página de login
 app.get('/login', (req, res) => {
   res.sendFile(path.resolve(__dirname, 'public', 'login.html'));
@@ -42,14 +47,13 @@ app.post('/login', (req, res) => {
   if (credentials[username] && credentials[username] === password) {
     // Credenciais corretas
     console.log('Login successful for user:', username); // Imprime uma mensagem de sucesso
-    return res.status(200).redirect('index.html'); // Alterei aqui
+    return res.status(200).json({ redirect: '/index.html' }); // Envia o caminho de redirecionamento como resposta
   } else {
     // Credenciais inválidas
-    console.log('Invalid credentials for user:', username); // Imprime uma mensagem de erros
+    console.log('Invalid credentials for user:', username); // Imprime uma mensagem de erro
     return res.status(401).json({ message: 'Invalid username or password' });
   }
 });
-
 
 // Rota para lidar com a solicitação de logout
 app.get('/logout', (req, res) => {
