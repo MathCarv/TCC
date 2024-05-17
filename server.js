@@ -28,6 +28,10 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+app.use((req, res /* , next */) => {
+  res.redirect('/');
+});
+
 // Gera uma chave secreta aleatória usando SHA256
 const secretKey = crypto.randomBytes(32).toString('hex');
 
