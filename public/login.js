@@ -1,37 +1,57 @@
 $(document).ready(function() {
-    // Seleciona o formulário de login
-    const loginForm = $('#loginForm');
-    const errorMessage = $('#errorMessage'); // Seleciona a div para exibir a mensagem de erro
+    console.log('Document is ready'); // Log quando o documento está pronto
 
-    // Manipula o evento de envio do formulário
+    const loginForm = $('#loginForm');
+    const errorMessage = $('#errorMessage');
+
     loginForm.submit(function(event) {
-        // Impede o comportamento padrão do formulário de ser submetido
+        console.log('Form submitted'); // Log quando o formulário é enviado
+
         event.preventDefault();
 
-        // Obtém os valores dos campos de usuário e senha
         const username = $('#username').val();
         const password = $('#password').val();
 
-        // Faz uma solicitação AJAX para autenticar o usuário
+        console.log('Username:', username); // Log do nome de usuário
+        console.log('Password:', password); // Log da senha
+
         $.ajax({
-            url: '/login', // Rota no servidor para autenticar o usuário
+            url: '/login',
             method: 'POST',
             contentType: 'application/json',
             data: JSON.stringify({ username: username, password: password }),
             success: function(response) {
-                // Verifica se a resposta contém o redirecionamento para a página index.html
+                console.log('Response received:', response); // Log da resposta recebida
+
                 if (response.redirect) {
-                    window.location.href = response.redirect; // Redireciona para a página especificada na resposta
+                    console.log('Redirecting to:', response.redirect); // Log do redirecionamento
+                    window.location.href = response.redirect;
                 } else {
                     console.error('Redirect URL not found in response.');
-                    // Em caso de redirecionamento não encontrado na resposta, exibe uma mensagem de erro genérica
                     errorMessage.text('Error: Redirect URL not found.');
                 }
             },
             error: function(xhr, status, error) {
-                console.error('Error logging in:', error);
-                // Exibe uma mensagem de erro ao usuário
-                errorMessage.text('Invalid username or password. Please try again.'); // Define o texto da mensagem de erro
+                console.error('Error logging in:', error); // Log do erro
+                errorMessage.text('Nome de usuário ou senha inválidos. Por favor, tente novamente.');
+                
+                // Centralizar a mensagem de erro abaixo do botão de login
+                const loginButton = $('#loginButton');
+                const loginButtonPosition = loginButton.offset();
+                const loginButtonHeight = loginButton.outerHeight();
+                const errorMessageHeight = errorMessage.outerHeight();
+                const errorMessageWidth = errorMessage.outerWidth();
+                
+                // Calcula a posição correta para a mensagem de erro
+                const errorMessageTop = loginButtonPosition.top + loginButtonHeight + 10;
+                const errorMessageLeft = (loginButtonPosition.left + loginButton.outerWidth() / 2) - (errorMessageWidth / 2);
+                
+                // Define a posição da mensagem de erro
+                errorMessage.css({
+                    position: 'absolute',
+                    top: errorMessageTop,
+                    left: errorMessageLeft
+                });
             }
         });
     });

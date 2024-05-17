@@ -1,38 +1,24 @@
 body {
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
-  padding: 0;
+  padding: 50px;
   margin: 0;
   text-align: center;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 100vh;
-  box-sizing: border-box;
-  background-color: #f4f4f4; /* Adicionado para um fundo mais harmonioso */
 }
 
 .flexHeader {
   display: flex;
   flex-direction: row;
+  flex-wrap: nowrap;
   justify-content: space-between;
-  width: 100%;
-  max-width: 1200px;
-  margin-bottom: 20px;
-  padding: 0 20px; /* Adicionado padding para espaçamento interno */
-  box-sizing: border-box;
 }
 
 a {
   color: #00B7FF;
-  text-decoration: none;
-  font-size: 14px; /* Adicionado para tamanho de fonte consistente */
 }
 
 body select {
-  padding: 10px 20px; /* Reduzido padding para um visual mais equilibrado */
-  width: 100%; /* Garantir que ocupe 100% do espaço disponível */
-  max-width: 400px; /* Limitar a largura máxima */
+  padding: 10px 70px 10px 13px;
+  max-width: 100%;
   height: auto;
   border: 1px solid #e3e3e3;
   border-radius: 3px;
@@ -41,16 +27,16 @@ body select {
   color: #444444;
   line-height: 16px;
   appearance: none;
-  -webkit-appearance: none;
+  /* this is must */ -webkit-appearance: none;
   -moz-appearance: none;
-  margin: 10px 0;
-  box-sizing: border-box;
 }
 
+/* body select.select_box option */
 body select option {
-  padding: 4px; /* Ajustado para consistência */
+  padding: 0 4px;
 }
 
+/* for Edge */
 select::-ms-expand {
   display: none;
 }

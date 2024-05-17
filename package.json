@@ -12,6 +12,7 @@
   "dependencies": {
     "@azure/event-hubs": ">=5.0.2",
     "buffer": "^5.5.0",
+    "cookie-parser": "^1.4.6",
     "crypto": "^1.0.1",
     "eslint": "^6.8.0",
     "eslint-config-airbnb": ">=18.0.1",
@@ -23,6 +24,7 @@
     "eslint-plugin-react": ">=7.14.3",
     "eslint-plugin-standard": ">=4.0.1",
     "express": ">=4.17.1",
+    "express-session": "^1.18.0",
     "minimist": ">=1.2.5",
     "mssql": "^10.0.2",
     "rhea-promise": "^1.0.0",

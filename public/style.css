@@ -8,6 +8,9 @@ body {
     align-items: center;
     height: 100vh;
     box-sizing: border-box;
+    background-image: url('../images/inatel.png');
+    background-size: cover;
+    background-position: center;
 }
 
 .container {
@@ -35,7 +38,8 @@ label {
     font-weight: bold;
 }
 
-input[type="text"], input[type="password"] {
+input[type="text"],
+input[type="password"] {
     width: 100%;
     padding: 10px;
     border: 1px solid #ccc;

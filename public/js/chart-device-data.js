@@ -58,7 +58,7 @@ $(document).ready(() => {
     datasets: [
       {
         fill: false,
-        label: 'Temperature',
+        label: 'Temperatura',
         yAxisID: 'Temperature',
         borderColor: 'rgba(255, 204, 0, 1)',
         pointBoarderColor: 'rgba(255, 204, 0, 1)',
@@ -69,7 +69,7 @@ $(document).ready(() => {
       },
       {
         fill: false,
-        label: 'Humidity',
+        label: 'Umidade',
         yAxisID: 'Humidity',
         borderColor: 'rgba(24, 120, 240, 1)',
         pointBoarderColor: 'rgba(24, 120, 240, 1)',
@@ -89,12 +89,14 @@ $(document).ready(() => {
         scaleLabel: {
           labelString: 'Temperature (ºC)',
           display: true,
+          fontColor: 'white' // Definir a cor do texto para branco
         },
         position: 'left',
         ticks: {
           suggestedMin: 0,
           suggestedMax: 100,
-          beginAtZero: true
+          beginAtZero: true,
+          fontColor: 'white' // Definir a cor dos números do eixo para branco
         }
       },
       {
@@ -103,16 +105,19 @@ $(document).ready(() => {
         scaleLabel: {
           labelString: 'Humidity (%)',
           display: true,
+          fontColor: 'white' // Definir a cor do texto para branco
         },
         position: 'right',
         ticks: {
           suggestedMin: 0,
           suggestedMax: 100,
-          beginAtZero: true
+          beginAtZero: true,
+          fontColor: 'white' // Definir a cor dos números do eixo para branco
         }
       }]
     }
   };
+  
 
   // Get the context of the canvas element we want to select
   const ctx = document.getElementById('iotChart').getContext('2d');

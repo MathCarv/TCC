@@ -1,30 +1,92 @@
-<!doctype html>
-
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-    <script src="https://code.jquery.com/jquery-3.4.0.min.js" integrity="sha256-BJeo0qm959uMBGb65z40ejJYGSgR7REI4+CW1fNKwOg=" crossorigin="anonymous"" type="text/javascript" charset="utf-8"></script>
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.4.0.min.js" integrity="sha256-BJeo0qm959uMBGb65z40ejJYGSgR7REI4+CW1fNKwOg=" crossorigin="anonymous" type="text/javascript" charset="utf-8"></script>
+    
+    <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0/dist/Chart.min.js" type="text/javascript" charset="utf-8"></script>
+    
+    <!-- Chart Device Data Script -->
     <script src="js/chart-device-data.js" type="text/javascript" charset="utf-8"></script>
+    
+    <!-- CSS Style -->
     <link href="css/style.css" rel="stylesheet" />
+    <style>
+        /* Estilo para o texto "Temperatura e Umidade em tempo real" */
+        #pageTitle {
+            font-size: 24px; /* Tamanho da fonte */
+            text-align: center; /* Texto centralizado */
+            position: absolute; /* Posição absoluta */
+            top: 30px; /* Distância do topo */
+            color: white; /* Cor do texto */
+            left: 50%; /* Centralizar na horizontal */
+            transform: translateX(-50%); /* Corrigir a centralização */
+        }
+        
+        /* Estilo para o botão de logout */
+        #logoutButton {
+            padding: 10px 20px; /* Espaçamento interno */
+            font-size: 16px; /* Tamanho da fonte */
+            border: none; /* Sem borda */
+            border-radius: 5px; /* Borda arredondada */
+            background-color: #5936f4; /* Cor de fundo */
+            color: white; /* Cor do texto */
+            cursor: pointer; /* Altera o cursor para indicar que é clicável */
+            transition: background-color 0.3s; /* Transição suave da cor de fundo */
+        }
+        
+        #logoutButton:hover {
+            background-color: #d32f2f; /* Cor de fundo ao passar o mouse */
+        }
 
-    <title>Temperature &amp; Humidity Real-time Data</title>
+        /* Estilo para o background */
+        body {
+            background-image: url('/images/background.jpg');
+            background-repeat: no-repeat;
+            background-size: cover;
+        }
+
+        /* Estilo responsivo para o gráfico */
+        #iotChart {
+            max-width: 100%; /* O gráfico ocupa no máximo 100% da largura disponível */
+            height: auto; /* A altura se ajusta automaticamente para manter a proporção */
+        }
+    </style>
+
+    <!-- Favicon -->
+    <link rel="icon" href="images/favicon.png" type="image/png">
+
+    <title>Security Smart House</title>
 </head>
 
 <body>
-    <h1 class="flexHeader">
-        <span>
-            <span id="deviceCount">0 devices</span>
+    <div class="flexHeader">
+        <div>
+            <span id="deviceCount" style="color: white;">0 sensores</span>
             <select id="listOfDevices" class="select_box"></select>
-        </span>
-        <span>Temperature & Humidity Real-time Data</span>
-    </h1>
+        </div>
+        <div>
+            <button id="logoutButton">Sair</button>
+        </div>
+    </div>
     <div>
+        <span id="pageTitle">Temperatura e Umidade em tempo real</span>
         <canvas id="iotChart"></canvas>
     </div>
-</body>
 
+    <!-- Script para lidar com o logout -->
+    <script>
+        $(document).ready(function() {
+            $('#logoutButton').click(function() {
+                // Redirecionar para a rota de logout
+                window.location.href = '/logout';
+            });
+        });
+    </script>
+</body>
 </html>

@@ -5,27 +5,35 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
     <link rel="stylesheet" href="style.css">
+    <style>
+        .error-message {
+            margin-top: 40px; /* Defina a margem superior conforme necessário */
+        }
+    </style>
+
+    <!-- Favicon -->
+    <link rel="icon" href="images/favicon.png" type="image/png">
 </head>
 <body>
     <div class="container">
         <form id="loginForm" class="form">
             <h2>Login</h2>
             <div class="form-group">
-                <label for="username">Username:</label>
+                <label for="username">Usuario:</label>
                 <input type="text" id="username" name="username" required>
             </div>
             <div class="form-group">
-                <label for="password">Password:</label>
+                <label for="password">Senha:</label>
                 <input type="password" id="password" name="password" required>
             </div>
-            <button type="submit">Login</button>
-            <div id="errorMessage" style="color: red;"></div> <!-- Div para exibir mensagem de erro -->
+            <button type="submit">Entrar</button>
+            <div id="errorMessage" class="error-message" style="color: red;"></div> <!-- Div para exibir mensagem de erro -->
         </form>
     </div>
 
     <div id="userGreeting"></div>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="script.js"></script>
+    <script src="login.js"></script>
 </body>
 </html>

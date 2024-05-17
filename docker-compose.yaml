@@ -1,0 +1,18 @@
+version: '3.8'
+services:
+  web:
+    build: .
+    command: npm start
+    volumes:
+      - .:/usr/src/app
+    ports:
+      - 8080:8080
+    develop:
+      watch:
+        - action: sync
+          path: ./public
+          target: /usr/src/app/public
+          ignore:
+            - node_modules/
+        - action: rebuild
+          path: package.json
