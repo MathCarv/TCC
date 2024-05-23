@@ -11,7 +11,7 @@
         }
     </style>
 
-    <!-- Favicon -->
+    <!-- Favicon com integridade não especificada -->
     <link rel="icon" href="images/favicon.png" type="image/png">
 </head>
 <body>
@@ -27,12 +27,14 @@
                 <input type="password" id="password" name="password" required>
             </div>
             <button type="submit">Entrar</button>
-            <div id="errorMessage" class="error-message" style="color: red;"></div> <!-- Div para exibir mensagem de erro -->
+            <!-- Div para exibir mensagem de erro -->
+            <div id="errorMessage" class="error-message" style="color: red;"></div> 
         </form>
     </div>
 
     <div id="userGreeting"></div>
 
+    <!-- Script externo carregado sem integridade -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="login.js"></script>
 </body>
