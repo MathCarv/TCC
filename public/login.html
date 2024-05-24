@@ -11,7 +11,7 @@
         }
     </style>
 
-    <!-- Favicon com integridade não especificada -->
+    <!-- Favicon -->
     <link rel="icon" href="images/favicon.png" type="image/png">
 </head>
 <body>
@@ -27,15 +27,21 @@
                 <input type="password" id="password" name="password" required>
             </div>
             <button type="submit">Entrar</button>
-            <!-- Div para exibir mensagem de erro -->
-            <div id="errorMessage" class="error-message" style="color: red;"></div> 
+            <div id="errorMessage" class="error-message" style="color: red;"></div> <!-- Div para exibir mensagem de erro -->
         </form>
     </div>
 
     <div id="userGreeting"></div>
 
-    <!-- Script externo carregado sem integridade -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="login.js"></script>
+    <script>
+        // Adicionando vulnerabilidade XSS
+        $('#loginForm').submit(function(event) {
+            event.preventDefault();
+            const username = $('#username').val();
+            $('#userGreeting').html('Bem-vindo, ' + username + '!');
+        });
+    </script>
 </body>
 </html>
