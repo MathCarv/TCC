@@ -24,6 +24,9 @@
 
 #define LED_PIN 2
 #define DHT_PIN 4
+#define SENSOR_PRESENCA_PIN 5
+#define SENSOR_MAGNETISMO_PIN 16
+#define SENSOR_TRAVA_PIN 0
 #define DHT_TYPE DHT11
 #define sizeofarray(a) (sizeof(a) / sizeof(a[0]))
 #define ONE_HOUR_IN_SECS 3600
@@ -33,22 +36,55 @@
 static const char* ssid = IOT_CONFIG_WIFI_SSID;
 static const char* password = IOT_CONFIG_WIFI_PASSWORD;
 static const char* host = IOT_CONFIG_IOTHUB_FQDN;
-static const char* device_id = IOT_CONFIG_DEVICE_ID;
-static const char* device_key = IOT_CONFIG_DEVICE_KEY;
+
+static const char* device_id_dht = IOT_CONFIG_DEVICE_ID_DHT;
+static const char* device_key_dht = IOT_CONFIG_DEVICE_KEY_DHT;
+
+static const char* device_id_presenca = IOT_CONFIG_DEVICE_ID_PRESENCA;
+static const char* device_key_presenca = IOT_CONFIG_DEVICE_KEY_PRESENCA;
+
+static const char* device_id_magnetismo = IOT_CONFIG_DEVICE_ID_MAGNETISMO;
+static const char* device_key_magnetismo = IOT_CONFIG_DEVICE_KEY_MAGNETISMO;
+
+static const char* device_id_trava = IOT_CONFIG_DEVICE_ID_TRAVA;
+static const char* device_key_trava = IOT_CONFIG_DEVICE_KEY_TRAVA;
+
 static const int port = 8883;
  
 static WiFiClientSecure wifi_client;
 static X509List cert((const char*)ca_pem);
+
+
 static PubSubClient mqtt_client(wifi_client);
-static az_iot_hub_client client;
-static char sas_token[200];
+
+
+static az_iot_hub_client client_dht;
+static az_iot_hub_client client_presenca;
+static az_iot_hub_client client_magnetismo;
+static az_iot_hub_client client_trava;
+static char sas_token_dht[200];
+static char sas_token_presenca[200];
+static char sas_token_magnetismo[200];
+static char sas_token_trava[200];
 static uint8_t signature[512];
 static unsigned char encrypted_signature[32];
-static char base64_decoded_device_key[32];
+static char base64_decoded_device_key_dht[32];
+static char base64_decoded_device_key_presenca[32];
+static char base64_decoded_device_key_magnetismo[32];
+static char base64_decoded_device_key_trava[32];
 static unsigned long next_telemetry_send_time_ms = 0;
-static char telemetry_topic[128];
-static uint8_t telemetry_payload[100];
-static uint32_t telemetry_send_count = 0;
+static char telemetry_topic_dht[128];
+static char telemetry_topic_presenca[128];
+static char telemetry_topic_magnetismo[128];
+static char telemetry_topic_trava[128];
+static uint8_t telemetry_payload_dht[100];
+static uint8_t telemetry_payload_presenca[100];
+static uint8_t telemetry_payload_magnetismo[100];
+static uint8_t telemetry_payload_trava[100];
+static uint32_t telemetry_send_count_dht = 0;
+static uint32_t telemetry_send_count_presenca = 0;
+static uint32_t telemetry_send_count_magnetismo = 0;
+static uint32_t telemetry_send_count_trava = 0;
 static DHT dht(DHT_PIN, DHT_TYPE);
 
 ESP8266WebServer server(80);
@@ -108,18 +144,19 @@ void receivedCallback(char* topic, byte* payload, unsigned int length) {
   Serial.println("");
 }
 
-static void initializeClients() {
+static void initializeClients(const char* device_id, az_iot_hub_client* client) {
   az_iot_hub_client_options options = az_iot_hub_client_options_default();
   options.user_agent = AZ_SPAN_FROM_STR(AZURE_SDK_CLIENT_USER_AGENT);
 
   wifi_client.setTrustAnchors(&cert);
   if (az_result_failed(az_iot_hub_client_init(
-          &client,
+          client,
           az_span_create((uint8_t*)host, strlen(host)),
           az_span_create((uint8_t*)device_id, strlen(device_id)),
           &options)))
   {
-    Serial.println("Failed initializing Azure IoT Hub client");
+    Serial.println("Failed initializing Azure IoT Hub client for ");
+    Serial.println(device_id);
     return;
   }
 
@@ -129,7 +166,7 @@ static void initializeClients() {
 
 static uint32_t getSecondsSinceEpoch() { return (uint32_t)time(NULL); }
 
-static int generateSasToken(char* sas_token, size_t size) {
+static int generateSasToken(char* sas_token, size_t size, const char* device_key, char* base64_decoded_device_key, az_iot_hub_client* client) {
   az_span signature_span = az_span_create((uint8_t*)signature, sizeofarray(signature));
   az_span out_signature_span;
   az_span encrypted_signature_span
@@ -138,7 +175,7 @@ static int generateSasToken(char* sas_token, size_t size) {
   uint32_t expiration = getSecondsSinceEpoch() + ONE_HOUR_IN_SECS;
 
   if (az_result_failed(az_iot_hub_client_sas_get_signature(
-          &client, expiration, signature_span, &out_signature_span)))
+          client, expiration, signature_span, &out_signature_span)))
   {
     Serial.println("Failed getting SAS signature");
     return 1;
@@ -168,7 +205,7 @@ static int generateSasToken(char* sas_token, size_t size) {
       (uint8_t*)b64enc_hmacsha256_signature.c_str(), b64enc_hmacsha256_signature.length());
 
   if (az_result_failed(az_iot_hub_client_sas_get_password(
-          &client,
+          client,
           expiration,
           b64enc_hmacsha256_signature_span,
           AZ_SPAN_EMPTY,
@@ -183,11 +220,11 @@ static int generateSasToken(char* sas_token, size_t size) {
   return 0;
 }
 
-static int connectToAzureIoTHub() {
+static int connectToAzureIoTHub(char* sas_token, az_iot_hub_client* client) {
   size_t client_id_length;
   char mqtt_client_id[128];
   if (az_result_failed(az_iot_hub_client_get_client_id(
-          &client, mqtt_client_id, sizeof(mqtt_client_id) - 1, &client_id_length)))
+          client, mqtt_client_id, sizeof(mqtt_client_id) - 1, &client_id_length)))
   {
     Serial.println("Failed getting client id");
     return 1;
@@ -197,7 +234,7 @@ static int connectToAzureIoTHub() {
 
   char mqtt_username[128];
   if (az_result_failed(az_iot_hub_client_get_user_name(
-          &client, mqtt_username, sizeofarray(mqtt_username), NULL)))
+          client, mqtt_username, sizeofarray(mqtt_username), NULL)))
   {
     printf("Failed to get MQTT clientId, return code\n");
     return 1;
@@ -231,7 +268,6 @@ static int connectToAzureIoTHub() {
   }
 
   mqtt_client.subscribe(AZ_IOT_HUB_CLIENT_C2D_SUBSCRIBE_TOPIC);
-
   return 0;
 }
 
@@ -239,30 +275,72 @@ static void establishConnection() {
   connectToWiFi();
   initializeTime();
   printCurrentTime();
-  initializeClients();
+  initializeClients(device_id_dht, &client_dht);
+  initializeClients(device_id_presenca, &client_presenca);
+  initializeClients(device_id_magnetismo, &client_magnetismo);
+  initializeClients(device_id_trava, &client_trava);
 
-  if (generateSasToken(sas_token, sizeofarray(sas_token)) != 0)
+  // Geração dos tokens SAS para cada dispositivo
+  if (generateSasToken(sas_token_dht, sizeofarray(sas_token_dht), device_key_dht, base64_decoded_device_key_dht, &client_dht) != 0)
   {
-    Serial.println("Failed generating MQTT password");
-  }
-  else
-  {
-    connectToAzureIoTHub();
+    Serial.println("Failed generating MQTT password for DHT device");
   }
 
+  if (generateSasToken(sas_token_presenca, sizeofarray(sas_token_presenca), device_key_presenca, base64_decoded_device_key_presenca, &client_presenca) != 0)
+  {
+    Serial.println("Failed generating MQTT password for presence sensor device");
+  }
+
+  if (generateSasToken(sas_token_magnetismo, sizeofarray(sas_token_magnetismo), device_key_magnetismo, base64_decoded_device_key_magnetismo, &client_magnetismo) != 0)
+  {
+    Serial.println("Failed generating MQTT password for magnetism sensor device");
+  }
+
+  if (generateSasToken(sas_token_trava, sizeofarray(sas_token_trava), device_key_trava, base64_decoded_device_key_trava, &client_trava) != 0)
+  {
+    Serial.println("Failed generating MQTT password for lock sensor device");
+  }
+  connectToAzureIoTHub(sas_token_dht, &client_dht);
   digitalWrite(LED_PIN, LOW);
 }
 
-static char* getTelemetryPayload(float temperature, float humidity) {
-  snprintf((char*)telemetry_payload, sizeof(telemetry_payload), 
+static char* getTelemetryPayloadDHT(float temperature, float humidity) {
+  snprintf((char*)telemetry_payload_dht, sizeof(telemetry_payload_dht), 
            "{ \"deviceId\": \"%s\", \"messageId\": %d, \"temperature\": %.2f, \"humidity\": %.2f }",
-           device_id, ++telemetry_send_count, temperature, humidity);
+           device_id_dht, ++telemetry_send_count_dht, temperature, humidity);
   Serial.print("Telemetry Payload: ");
-  Serial.println((char*)telemetry_payload);
-  return (char*)telemetry_payload;
+  Serial.println((char*)telemetry_payload_dht);
+  return (char*)telemetry_payload_dht;
 }
 
-static void sendTelemetry() {
+static char* getTelemetryPayloadPresenca(int presenceValue) {
+  snprintf((char*)telemetry_payload_presenca, sizeof(telemetry_payload_presenca), 
+           "{ \"deviceId\": \"%s\", \"messageId\": %d, \"presence\": %d }",
+           device_id_presenca, ++telemetry_send_count_presenca, presenceValue);
+  Serial.print("Telemetry Payload (Presence): ");
+  Serial.println((char*)telemetry_payload_presenca);
+  return (char*)telemetry_payload_presenca;
+}
+
+static char* getTelemetryPayloadMagnetismo(int magnetismValue) {
+  snprintf((char*)telemetry_payload_magnetismo, sizeof(telemetry_payload_magnetismo), 
+           "{ \"deviceId\": \"%s\", \"messageId\": %d, \"magnetism\": %d }",
+           device_id_magnetismo, ++telemetry_send_count_magnetismo, magnetismValue);
+  Serial.print("Telemetry Payload (Magnetism): ");
+  Serial.println((char*)telemetry_payload_magnetismo);
+  return (char*)telemetry_payload_magnetismo;
+}
+
+static char* getTelemetryPayloadTrava(int lockValue) {
+  snprintf((char*)telemetry_payload_trava, sizeof(telemetry_payload_trava), 
+           "{ \"deviceId\": \"%s\", \"messageId\": %d, \"lock\": %d }",
+           device_id_trava, ++telemetry_send_count_trava, lockValue);
+  Serial.print("Telemetry Payload (Lock): ");
+  Serial.println((char*)telemetry_payload_trava);
+  return (char*)telemetry_payload_trava;
+}
+
+static void sendTelemetry_dht() {
   digitalWrite(LED_PIN, HIGH);
   float temperature = dht.readTemperature();
   float humidity = dht.readHumidity();
@@ -279,101 +357,160 @@ static void sendTelemetry() {
   Serial.println(" %");
   
   if (az_result_failed(az_iot_hub_client_telemetry_get_publish_topic(
-          &client, NULL, telemetry_topic, sizeof(telemetry_topic), NULL)))
+          &client_dht, NULL, telemetry_topic_dht, sizeof(telemetry_topic_dht), NULL)))
   {
     Serial.println("Failed az_iot_hub_client_telemetry_get_publish_topic");
     return;
   }
 
-  mqtt_client.publish(telemetry_topic, getTelemetryPayload(temperature, humidity), false);
+  mqtt_client.publish(telemetry_topic_dht, getTelemetryPayloadDHT(temperature, humidity), false);
   Serial.println("OK");
   delay(100);
   digitalWrite(LED_PIN, LOW);
+  mqtt_client.disconnect();
 }
 
-void handleRoot() {
-  String html = "<html><body>";
-  html += "<h1>ESP8266 Configuration Page</h1>";
-  html += "<form method='POST' action='/saveconfig'>";
-  html += "WiFi SSID: <input type='text' name='ssid'><br>";
-  html += "WiFi Password: <input type='password' name='password'><br>";
-  html += "<input type='submit' value='Save'>";
-  html += "</form></body></html>";
+static void sendTelemetry_presenca() {
+  pinMode(SENSOR_PRESENCA_PIN, INPUT);  // Define o pino como entrada para leitura do sensor
+  digitalWrite(LED_PIN, HIGH);
+  int presenceValue = digitalRead(SENSOR_PRESENCA_PIN);  // Lê o valor do sensor de presença
   
-  server.send(200, "text/html", html);
-}
-
-void handleSaveConfig() {
-  String ssid = server.arg("ssid");
-  String password = server.arg("password");
-
-  // Save configuration to SPIFFS
-  Serial.println("Saving configuration to SPIFFS...");
-  File configFile = SPIFFS.open("/config.txt", "w");
-  if (!configFile) {
-    Serial.println("Failed to open config file for writing");
+  Serial.print("ESP8266 Sending telemetry - Presence: ");
+  Serial.println(presenceValue);
+  
+  if (az_result_failed(az_iot_hub_client_telemetry_get_publish_topic(
+          &client_presenca, NULL, telemetry_topic_presenca, sizeof(telemetry_topic_presenca), NULL)))
+  {
+    Serial.println("Failed az_iot_hub_client_telemetry_get_publish_topic");
     return;
   }
-  
-  configFile.println(ssid);
-  configFile.println(password);
-  configFile.close();
 
-  Serial.println("Configuration saved successfully");
+  mqtt_client.publish(telemetry_topic_presenca, getTelemetryPayloadPresenca(presenceValue), false);
+  Serial.println("OK");
+  delay(100);
+  digitalWrite(LED_PIN, LOW);
+  mqtt_client.disconnect();
+}
+
+static void sendTelemetry_magnetismo() {
+  pinMode(SENSOR_MAGNETISMO_PIN, INPUT);  // Define o pino como entrada para leitura do sensor
+  digitalWrite(LED_PIN, HIGH);
+  int magnetismValue = digitalRead(SENSOR_MAGNETISMO_PIN);  // Lê o valor do sensor de magnetismo
   
-  server.send(200, "text/plain", "Configuration saved. Restarting device...");
-  delay(1000);
-  ESP.restart();
+  Serial.print("ESP8266 Sending telemetry - Magnetism: ");
+  Serial.println(magnetismValue);
+  
+  if (az_result_failed(az_iot_hub_client_telemetry_get_publish_topic(
+          &client_magnetismo, NULL, telemetry_topic_magnetismo, sizeof(telemetry_topic_magnetismo), NULL)))
+  {
+    Serial.println("Failed az_iot_hub_client_telemetry_get_publish_topic");
+    return;
+  }
+
+  mqtt_client.publish(telemetry_topic_magnetismo, getTelemetryPayloadMagnetismo(magnetismValue), false);
+  Serial.println("OK");
+  delay(100);
+  digitalWrite(LED_PIN, LOW);
+  mqtt_client.disconnect();
+}
+
+static void sendTelemetry_trava() {
+  pinMode(SENSOR_TRAVA_PIN, INPUT);  // Define o pino como entrada para leitura do sensor
+  digitalWrite(LED_PIN, HIGH);
+  int lockValue = digitalRead(SENSOR_TRAVA_PIN);  // Lê o valor do sensor de trava
+  
+  Serial.print("ESP8266 Sending telemetry - Lock: ");
+  Serial.println(lockValue);
+  
+  if (az_result_failed(az_iot_hub_client_telemetry_get_publish_topic(
+          &client_trava, NULL, telemetry_topic_trava, sizeof(telemetry_topic_trava), NULL)))
+  {
+    Serial.println("Failed az_iot_hub_client_telemetry_get_publish_topic");
+    return;
+  }
+
+  mqtt_client.publish(telemetry_topic_trava, getTelemetryPayloadTrava(lockValue), false);
+  Serial.println("OK");
+  delay(100);
+  digitalWrite(LED_PIN, LOW);
+  mqtt_client.disconnect();
 }
 
 void setup() {
   pinMode(LED_PIN, OUTPUT);
+  pinMode(SENSOR_PRESENCA_PIN, INPUT);
+  pinMode(SENSOR_MAGNETISMO_PIN, INPUT);
+  pinMode(SENSOR_TRAVA_PIN, INPUT);
   digitalWrite(LED_PIN, HIGH);
   dht.begin();
   connectToWiFi();
   initializeTime();
   printCurrentTime();
-  initializeClients();
-
-  server.on("/", HTTP_GET, handleRoot);
-  server.on("/saveconfig", HTTP_POST, handleSaveConfig);
-
-  server.begin();
-  Serial.println("HTTP server started");
-
-  if (!SPIFFS.begin()) {
-    Serial.println("Failed to mount file system");
-    return;
-  }
-
-  saveConfig();
+  initializeClients(device_id_dht, &client_dht);
+  initializeClients(device_id_presenca, &client_presenca);
+  initializeClients(device_id_magnetismo, &client_magnetismo);
+  initializeClients(device_id_trava, &client_trava);
   
-  if (generateSasToken(sas_token, sizeofarray(sas_token)) != 0)
+  // Geração dos tokens SAS para cada dispositivo
+  if (generateSasToken(sas_token_dht, sizeofarray(sas_token_dht), device_key_dht, base64_decoded_device_key_dht, &client_dht) != 0)
   {
-    Serial.println("Failed generating MQTT password");
-  }
-  else
-  {
-    connectToAzureIoTHub();
+    Serial.println("Failed generating MQTT password for DHT device");
   }
 
+  if (generateSasToken(sas_token_presenca, sizeofarray(sas_token_presenca), device_key_presenca, base64_decoded_device_key_presenca, &client_presenca) != 0)
+  {
+    Serial.println("Failed generating MQTT password for presence sensor device");
+  }
+
+  if (generateSasToken(sas_token_magnetismo, sizeofarray(sas_token_magnetismo), device_key_magnetismo, base64_decoded_device_key_magnetismo, &client_magnetismo) != 0)
+  {
+    Serial.println("Failed generating MQTT password for magnetism sensor device");
+  }
+
+  if (generateSasToken(sas_token_trava, sizeofarray(sas_token_trava), device_key_trava, base64_decoded_device_key_trava, &client_trava) != 0)
+  {
+    Serial.println("Failed generating MQTT password for lock sensor device");
+  }
+  connectToAzureIoTHub(sas_token_dht, &client_dht);
+  // Aqui você pode continuar com a lógica de conexão aos respectivos hubs Azure IoT Hub
   digitalWrite(LED_PIN, LOW);
 }
 
 void loop() {
   server.handleClient();
 
+  // Verifica se é hora de enviar telemetria
   if (millis() > next_telemetry_send_time_ms)
   {
+    // Verifica se o cliente MQTT não está conectado e estabelece a conexão se necessário
     if (!mqtt_client.connected())
     {
-      establishConnection();
+      establishConnection();  // Esta função deve tentar conectar apenas se necessário
     }
-
-    sendTelemetry();
-    next_telemetry_send_time_ms = millis() + TELEMETRY_FREQUENCY_MILLISECS;
+    // Se a conexão foi estabelecida ou já estava conectado, envia telemetria para todos os dispositivos
+    if (mqtt_client.connected())
+    {
+      sendTelemetry_dht();
+      connectToAzureIoTHub(sas_token_magnetismo, &client_magnetismo);
+      sendTelemetry_magnetismo();
+      connectToAzureIoTHub(sas_token_presenca, &client_presenca);
+      sendTelemetry_presenca();
+      connectToAzureIoTHub(sas_token_trava, &client_trava);
+      sendTelemetry_trava();
+      connectToAzureIoTHub(sas_token_dht, &client_dht);
+      // Atualiza o tempo para o próximo envio de telemetria
+      next_telemetry_send_time_ms = millis() + TELEMETRY_FREQUENCY_MILLISECS;
+    }
+    else
+    {
+      // Caso não esteja conectado, você pode decidir o que fazer, como tentar conectar novamente ou apenas aguardar
+      Serial.println("MQTT client is not connected. Waiting for connection...");
+    }
   }
 
+  // Mantém o loop do cliente MQTT
   mqtt_client.loop();
+
+  // Aguarda um pequeno intervalo de tempo
   delay(500);
 }

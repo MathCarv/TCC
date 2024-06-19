@@ -13,6 +13,10 @@
     
     <!-- Chart Device Data Script -->
     <script src="js/chart-device-data.js" type="text/javascript" charset="utf-8"></script>
+
+    <!-- Script para o status dos sensores -->
+    <script src="js/sensor-status.js" type="text/javascript" charset="utf-8"></script>
+
     
     <!-- CSS Style -->
     <link href="css/style.css" rel="stylesheet" />
@@ -56,6 +60,41 @@
             max-width: 100%; /* O gráfico ocupa no máximo 100% da largura disponível */
             height: auto; /* A altura se ajusta automaticamente para manter a proporção */
         }
+
+        /* Estilo para os quadrados dos sensores */
+        .sensorSquare {
+            width: 20px; /* Largura do quadrado */
+            height: 20px; /* Altura do quadrado */
+            display: inline-block;
+            vertical-align: middle;
+            margin-right: 10px; /* Espaçamento entre os quadrados */
+            border: 1px solid white; /* Borda branca */
+        }
+
+        .sensorLabel {
+            color: white; /* Cor do texto */
+            margin-left: 5px; /* Espaço entre o quadrado e o texto */
+            display: inline-block;
+            vertical-align: middle;
+        }
+
+        /* Ajuste para alinhar os contêineres dos sensores */
+        .sensorMagnetismoContainer,
+        .sensorPresencaContainer,
+        .sensorTravaContainer {
+            display: flex; /* Usar flexbox para alinhar verticalmente */
+            align-items: center; /* Centralizar verticalmente os itens */
+            margin-bottom: 10px; /* Espaçamento entre os contêineres */
+        }
+
+        /* Ajuste adicional para o grupo de sensores à direita */
+        .sensorGroupRight {
+            display: flex; /* Usar flexbox para o layout */
+            flex-direction: column; /* Colocar os itens em coluna */
+            align-items: flex-start; /* Alinhar itens à esquerda */
+            margin-left: 850px; /* Mover para a direita */
+            padding: 10px; /* Espaçamento interno */
+        }
     </style>
 
     <!-- Favicon -->
@@ -70,12 +109,26 @@
             <span id="deviceCount" style="color: white;">0 sensores</span>
             <select id="listOfDevices" class="select_box"></select>
         </div>
+        <div class="sensorGroupRight">
+            <div class="sensorMagnetismoContainer">
+                <div id="sensorMagnetismo" class="sensorSquare"></div>
+                <span class="sensorLabel">SENSOR DE MAGNETISMO</span>
+            </div>
+            <div class="sensorPresencaContainer">
+                <div id="sensorPresenca" class="sensorSquare"></div>
+                <span class="sensorLabel">SENSOR DE PRESENÇA</span>
+            </div>
+            <div class="sensorTravaContainer">
+                <div id="sensorTrava" class="sensorSquare"></div>
+                <span class="sensorLabel">SENSOR DA TRAVA</span>
+            </div>
+        </div>
         <div>
             <button id="logoutButton">Sair</button>
         </div>
     </div>
     <div>
-        <span id="pageTitle">Temperatura e Umidade em tempo real</span>
+        <span id="pageTitle">Sensores em tempo real</span>
         <canvas id="iotChart"></canvas>
     </div>
 

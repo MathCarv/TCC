@@ -176,8 +176,8 @@ $(document).ready(() => {
       } else {
         const newDeviceData = new DeviceData(messageData.DeviceId);
         trackedDevices.devices.push(newDeviceData);
-        const numDevices = trackedDevices.getDevicesCount();
-        deviceCount.innerText = numDevices === 1 ? `${numDevices} device` : `${numDevices} devices`;
+        const numDevices = 4;
+        deviceCount.innerText = numDevices === 1 ? `${numDevices} sensores` : `${numDevices} sensores`;
         newDeviceData.addData(messageData.MessageDate, messageData.IotData.temperature, messageData.IotData.humidity);
 
         // add device to the UI list
