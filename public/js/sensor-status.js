@@ -13,13 +13,6 @@ $(document).ready(function() {
                 updateSensorDisplay('sensorPresenca', messageData.IotData.presence);
             }
 
-            // Atualiza o sensor da trava
-            if (messageData.DeviceId === 'sensortrava') {
-                console.log('Valor do sensor da trava:', messageData.IotData.lock);
-                // Substitua 'lock' pelo campo relevante para o status da trava
-                updateSensorDisplay('sensorTrava', messageData.IotData.lock);
-            }
-
             // Atualiza o sensor de magnetismo
             if (messageData.DeviceId === 'sensormagnetismo') {
                 console.log('Valor do sensor de magnetismo:', messageData.IotData.magnetism);

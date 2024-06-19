@@ -22,6 +22,7 @@
 
 #define AZURE_SDK_CLIENT_USER_AGENT "c%2F" AZ_SDK_VERSION_STRING "(ard;esp8266)"
 
+static bool travaAberta = false; // Variável para armazenar o estado da trava
 #define LED_PIN 2
 #define DHT_PIN 4
 #define SENSOR_PRESENCA_PIN 5
@@ -134,14 +135,27 @@ static void printCurrentTime() {
 }
 
 void receivedCallback(char* topic, byte* payload, unsigned int length) {
-  Serial.print("Received [");
-  Serial.print(topic);
-  Serial.print("]: ");
-  for (int i = 0; i < length; i++)
-  {
-    Serial.print((char)payload[i]);
+  Serial.print("Message received on topic: ");
+  Serial.println(topic);
+  
+  // Converte o payload em uma string
+  String message = "";
+  for (int i = 0; i < length; i++) {
+    message += (char)payload[i];
   }
-  Serial.println("");
+
+  // Exemplo de processamento de mensagem
+  // Aqui você deve implementar a lógica para interpretar a mensagem recebida do IoT Hub
+  // Neste exemplo, considera-se que a mensagem contém o estado da trava (1 para aberta, 0 para fechada)
+  if (message.equals("1")) {
+    travaAberta = true;
+    Serial.println("Trava está aberta.");
+  } else if (message.equals("0")) {
+    travaAberta = false;
+    Serial.println("Trava está fechada.");
+  } else {
+    Serial.println("Mensagem recebida inválida.");
+  }
 }
 
 static void initializeClients(const char* device_id, az_iot_hub_client* client) {
@@ -392,6 +406,38 @@ static void sendTelemetry_presenca() {
   mqtt_client.disconnect();
 }
 
+static void requestTravaState() {
+    mqtt_client.setServer(IOT_CONFIG_IOTHUB_FQDN, port);
+    Serial.print("Connecting to Azure IoT Hub...");
+
+    while (!mqtt_client.connected()) {
+    if (mqtt_client.connect(IOT_CONFIG_DEVICE_ID_TRAVA, IOT_CONFIG_DEVICE_KEY_TRAVA, NULL)) {
+      Serial.println("Connected to Azure IoT Hub!");
+    } else {
+      Serial.print("Failed, rc=");
+      Serial.print(mqtt_client.state());
+      Serial.println(" Trying again in 5 seconds...");
+      delay(5000);
+    }
+  }
+  // Subscrever ao tópico para receber mensagens do dispositivo
+  const char* subscribeTopic = "devices/sensortrava/messages/devicebound/#";
+  if (mqtt_client.subscribe(subscribeTopic)) {
+    Serial.print("Subscribed to topic: ");
+    Serial.println(subscribeTopic);
+  } else {
+    Serial.println("Failed to subscribe. Check MQTT connection.");
+  }
+
+  if (travaAberta) {
+      digitalWrite(SENSOR_TRAVA_PIN, HIGH); 
+    } 
+  else {
+      digitalWrite(SENSOR_TRAVA_PIN, LOW); 
+   }
+}
+
+
 static void sendTelemetry_magnetismo() {
   pinMode(SENSOR_MAGNETISMO_PIN, INPUT);  // Define o pino como entrada para leitura do sensor
   digitalWrite(LED_PIN, HIGH);
@@ -414,33 +460,11 @@ static void sendTelemetry_magnetismo() {
   mqtt_client.disconnect();
 }
 
-static void sendTelemetry_trava() {
-  pinMode(SENSOR_TRAVA_PIN, INPUT);  // Define o pino como entrada para leitura do sensor
-  digitalWrite(LED_PIN, HIGH);
-  int lockValue = digitalRead(SENSOR_TRAVA_PIN);  // Lê o valor do sensor de trava
-  
-  Serial.print("ESP8266 Sending telemetry - Lock: ");
-  Serial.println(lockValue);
-  
-  if (az_result_failed(az_iot_hub_client_telemetry_get_publish_topic(
-          &client_trava, NULL, telemetry_topic_trava, sizeof(telemetry_topic_trava), NULL)))
-  {
-    Serial.println("Failed az_iot_hub_client_telemetry_get_publish_topic");
-    return;
-  }
-
-  mqtt_client.publish(telemetry_topic_trava, getTelemetryPayloadTrava(lockValue), false);
-  Serial.println("OK");
-  delay(100);
-  digitalWrite(LED_PIN, LOW);
-  mqtt_client.disconnect();
-}
-
 void setup() {
   pinMode(LED_PIN, OUTPUT);
   pinMode(SENSOR_PRESENCA_PIN, INPUT);
   pinMode(SENSOR_MAGNETISMO_PIN, INPUT);
-  pinMode(SENSOR_TRAVA_PIN, INPUT);
+  pinMode(SENSOR_TRAVA_PIN, OUTPUT);
   digitalWrite(LED_PIN, HIGH);
   dht.begin();
   connectToWiFi();
@@ -450,7 +474,9 @@ void setup() {
   initializeClients(device_id_presenca, &client_presenca);
   initializeClients(device_id_magnetismo, &client_magnetismo);
   initializeClients(device_id_trava, &client_trava);
-  
+  mqtt_client.setServer(host, port);
+  mqtt_client.setCallback(receivedCallback);
+
   // Geração dos tokens SAS para cada dispositivo
   if (generateSasToken(sas_token_dht, sizeofarray(sas_token_dht), device_key_dht, base64_decoded_device_key_dht, &client_dht) != 0)
   {
@@ -496,7 +522,7 @@ void loop() {
       connectToAzureIoTHub(sas_token_presenca, &client_presenca);
       sendTelemetry_presenca();
       connectToAzureIoTHub(sas_token_trava, &client_trava);
-      sendTelemetry_trava();
+      requestTravaState();
       connectToAzureIoTHub(sas_token_dht, &client_dht);
       // Atualiza o tempo para o próximo envio de telemetria
       next_telemetry_send_time_ms = millis() + TELEMETRY_FREQUENCY_MILLISECS;

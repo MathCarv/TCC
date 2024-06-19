@@ -95,6 +95,38 @@
             margin-left: 850px; /* Mover para a direita */
             padding: 10px; /* Espaçamento interno */
         }
+
+        /* Estilo para o botão da trava - estado desligado */
+        .travaButtonOff {
+            padding: 10px 20px; /* Espaçamento interno */
+            font-size: 16px; /* Tamanho da fonte */
+            border: none; /* Sem borda */
+            border-radius: 5px; /* Borda arredondada */
+            background-color: #cc3333; /* Cor de fundo padrão */
+            color: white; /* Cor do texto */
+            cursor: pointer; /* Altera o cursor para indicar que é clicável */
+            transition: background-color 0.3s; /* Transição suave da cor de fundo */
+        }
+        
+        .travaButtonOff:hover {
+            background-color: #2bff00; /* Cor de fundo ao passar o mouse */
+        }
+
+        /* Estilo para o botão da trava - estado ligado */
+        .travaButtonOn {
+            padding: 10px 20px; /* Espaçamento interno */
+            font-size: 16px; /* Tamanho da fonte */
+            border: none; /* Sem borda */
+            border-radius: 5px; /* Borda arredondada */
+            background-color: #2bff00; /* Cor de fundo */
+            color: white; /* Cor do texto */
+            cursor: pointer; /* Altera o cursor para indicar que é clicável */
+            transition: background-color 0.3s; /* Transição suave da cor de fundo */
+        }
+        
+        .travaButtonOn:hover {
+            background-color: #cc3333; /* Cor de fundo ao passar o mouse */
+        }
     </style>
 
     <!-- Favicon -->
@@ -119,8 +151,7 @@
                 <span class="sensorLabel">SENSOR DE PRESENÇA</span>
             </div>
             <div class="sensorTravaContainer">
-                <div id="sensorTrava" class="sensorSquare"></div>
-                <span class="sensorLabel">SENSOR DA TRAVA</span>
+                <button id="travaButton" class="travaButtonOff">ATUADOR DA TRAVA - DESLIGADO</button>
             </div>
         </div>
         <div>
@@ -128,18 +159,43 @@
         </div>
     </div>
     <div>
-        <span id="pageTitle">Sensores em tempo real</span>
+        <span id="pageTitle">Security Smart House</span>
         <canvas id="iotChart"></canvas>
     </div>
 
-    <!-- Script para lidar com o logout -->
     <script>
         $(document).ready(function() {
-            $('#logoutButton').click(function() {
-                // Redirecionar para a rota de logout
-                window.location.href = '/logout';
+            $('#travaButton').click(function() {
+                var currentState = $(this).hasClass('travaButtonOn') ? 1 : 0; // Verifica o estado atual do botão
+                var newState = currentState === 1 ? 0 : 1; // Alterna o estado
+
+                sendCommandToServer(newState); // Envia o novo estado para o servidor
             });
+
+            function sendCommandToServer(command) {
+                $.ajax({
+                    type: 'POST',
+                    url: '/send_command',
+                    contentType: 'application/json',
+                    data: JSON.stringify({ command: command }),
+                    success: function(response) {
+                        console.log('Command sent successfully');
+                        updateButtonState(command); // Atualiza o estado visual do botão
+                    },
+                    error: function(err) {
+                        console.error('Error sending command:', err);
+                    }
+                });
+            }
+
+            function updateButtonState(state) {
+                if (state === 1) {
+                    $('#travaButton').removeClass('travaButtonOff').addClass('travaButtonOn').text('ATUADOR DA TRAVA - LIGADO');
+                } else {
+                    $('#travaButton').removeClass('travaButtonOn').addClass('travaButtonOff').text('ATUADOR DA TRAVA - DESLIGADO');
+                }
+            }
         });
-    </script>
+    </script>    
 </body>
 </html>

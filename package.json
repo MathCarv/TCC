@@ -11,6 +11,9 @@
   },
   "dependencies": {
     "@azure/event-hubs": ">=5.0.2",
+    "async-mqtt": "^2.6.3",
+    "azure-iothub": "^1.16.5",
+    "body-parser": "^1.20.2",
     "buffer": "^5.5.0",
     "cookie-parser": "^1.4.6",
     "crypto": "^1.0.1",
@@ -27,6 +30,7 @@
     "express-session": "^1.18.0",
     "json2csv": "^6.0.0-alpha.2",
     "minimist": ">=1.2.5",
+    "mqtt": "^5.7.2",
     "mssql": "^10.0.2",
     "rhea-promise": "^1.0.0",
     "sequelize": "^6.37.3",
