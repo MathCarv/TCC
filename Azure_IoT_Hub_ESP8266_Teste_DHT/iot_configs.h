@@ -2,27 +2,23 @@
 // SPDX-License-Identifier: MIT
 
 // Wifi
-#define IOT_CONFIG_WIFI_SSID "Matheus"
-#define IOT_CONFIG_WIFI_PASSWORD "matheus15072022"
+#define IOT_CONFIG_WIFI_SSID "WLL-Inatel"
+#define IOT_CONFIG_WIFI_PASSWORD "inatelsemfio"
 
 // Azure IoT
-#define IOT_CONFIG_IOTHUB_FQDN "TccIotHub.azure-devices.net"
+#define IOT_CONFIG_IOTHUB_FQDN "TccIotSecurity.azure-devices.net"
 
 // DHT
 #define IOT_CONFIG_DEVICE_ID_DHT "dht"
-#define IOT_CONFIG_DEVICE_KEY_DHT "rFfK07+uYYAJgELzjbNuhlqzn3zcHvy6uAIoTLDUL4Q="
+#define IOT_CONFIG_DEVICE_KEY_DHT "qGYh85PeCsEHT2pRTbg07D6F2uxAGPfwwAIoTCIuB0k="
 
 // Sensor Presença
 #define IOT_CONFIG_DEVICE_ID_PRESENCA "sensorpresenca"
-#define IOT_CONFIG_DEVICE_KEY_PRESENCA "Bw0eneBnsW/yUzxjoPrhzn6t7pM+WOWacUT9YjASvSo="
+#define IOT_CONFIG_DEVICE_KEY_PRESENCA "eBOZMvFv/6G15trn+rRgU/AczI1PvNzqvAIoTI41e2s="
 
 // Sensor Magnetismo
 #define IOT_CONFIG_DEVICE_ID_MAGNETISMO "sensormagnetismo"
-#define IOT_CONFIG_DEVICE_KEY_MAGNETISMO "EO7Icdv5vOpNvhoxTCIx6eJ67U5vLI5F/5Vq6PY1gW0="
-
-// Sensor Trava
-#define IOT_CONFIG_DEVICE_ID_TRAVA "sensortrava"
-#define IOT_CONFIG_DEVICE_KEY_TRAVA "KHg8Tpi6oEp85MzWjx0pi/7YeljVI7ZuMEZrOwWmetQ="
+#define IOT_CONFIG_DEVICE_KEY_MAGNETISMO "fentrllDS9cBUg+VPqpdGPV4mbuqoo6o5AIoTOlpvQM="
 
 // Publish 1 message every 2 seconds
-#define TELEMETRY_FREQUENCY_MILLISECS 10000
+#define TELEMETRY_FREQUENCY_MILLISECS 1000
