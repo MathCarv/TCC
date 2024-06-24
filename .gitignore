@@ -27,8 +27,6 @@ coverage
 build/Release
 
 
-Credentials.txt
-credentials.json
 # Dependency directories
 node_modules
 jspm_packages
