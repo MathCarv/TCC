@@ -8,7 +8,7 @@
   },
   "scripts": {
     "start": "node server.js",
-    "test": "mocha server.test.mjs"
+    "test": "mocha Public/Tests/sensor-status.test.js && mocha Public/Tests/server.test.mjs"
   },
   "dependencies": {
     "@azure/event-hubs": ">=5.0.2",
@@ -40,10 +40,13 @@
     "xlsx": "^0.18.5"
   },
   "devDependencies": {
-    "chai": "^4.3.4",
+    "chai": "^4.4.1",
     "chai-http": "^4.4.0",
     "esm": "^3.2.25",
+    "jsdom": "^24.1.0",
+    "jsdom-global": "^3.0.2",
     "mocha": "^8.4.0",
+    "sinon": "^18.0.0",
     "supertest": "^6.1.3"
   }
 }

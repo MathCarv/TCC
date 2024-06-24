@@ -1,10 +1,10 @@
 import chai from 'chai';
 import chaiHttp from 'chai-http';
 import { expect } from 'chai';
-import server from './server.js';
+import server from '../../server.js';
 
 chai.use(chaiHttp);
-
+//Testes Back-End
 describe('Server Tests', () => {
     it('Deve redirecionar para /login na rota /', (done) => {
         chai.request(server)
