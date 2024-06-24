@@ -7,7 +7,8 @@
     "npm": ">=6.0.0"
   },
   "scripts": {
-    "start": "node server.js"
+    "start": "node server.js",
+    "test": "mocha server.test.mjs"
   },
   "dependencies": {
     "@azure/event-hubs": ">=5.0.2",
@@ -37,5 +38,12 @@
     "tailwindcss": "^3.4.3",
     "ws": ">=7.1.2",
     "xlsx": "^0.18.5"
+  },
+  "devDependencies": {
+    "chai": "^4.3.4",
+    "chai-http": "^4.4.0",
+    "esm": "^3.2.25",
+    "mocha": "^8.4.0",
+    "supertest": "^6.1.3"
   }
 }
